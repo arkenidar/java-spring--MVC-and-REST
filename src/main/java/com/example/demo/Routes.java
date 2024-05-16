@@ -28,6 +28,7 @@ class Routes {
         ModelAndView model = new ModelAndView("template1");
         model.addObject("attribute1", "TEST: id=" + id);
         model.addObject("attribute2", LocalDateTime.now());
+        model.addObject("attribute3", showDataAsJSON("innersun"));
         return model;
     }
 

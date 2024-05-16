@@ -5,12 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thymeleaf</title>
+    <link rel="stylesheet" href="html-style.css">
 </head>
 
 <body>
     <h1>Thymeleaf</h1>
     <p th:text="${attribute1}" />
     <p th:text="${attribute2}" />
+    <div class="boxed">boxed div content</div>
+    <br>
+    <!-- https://www.baeldung.com/thymeleaf-iteration -->
+    <div class="boxed" th:each="entry, iStat : ${attribute3}">
+        <div th:text="${entry.name}" />
+        <div th:text="${entry.username}" />
+    </div>
 </body>
 
 </html>
