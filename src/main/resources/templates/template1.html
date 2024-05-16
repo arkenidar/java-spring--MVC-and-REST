@@ -19,6 +19,24 @@
         <div th:text="${entry.name}" />
         <div th:text="${entry.username}" />
     </div>
+    <hr>
+    <!-- https://ejs.co/#install -->
+    <div id="ejs_output"></div>
+    <!-- https://unpkg.com/ejs/ejs.js -->
+    <script src="ejs.js"></script>
+    <script type="module">
+        // let json = [{"name":"dario","username":"yalf"}]
+        const response = await fetch("/db?username=yalf")
+        const json = await response.json()
+        const ejs_template =
+            `<% for(let entry of json) { %>
+                <div>
+                    <%= entry.name %>: <%= entry.username %>
+                </div>
+            <% } %>`
+        const html = ejs.render(ejs_template, { json })
+        document.querySelector("#ejs_output").innerHTML = html
+    </script>
 </body>
 
 </html>
