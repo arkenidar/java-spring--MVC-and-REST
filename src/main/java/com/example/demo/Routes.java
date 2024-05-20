@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.time.LocalDateTime;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,18 +38,17 @@ class Routes {
     public @ResponseBody Iterable<User> showDataAsJSON(
             @RequestParam(required = false, defaultValue = "10") int limit) {
         String sql = "select name, username FROM user LIMIT ?";
-        return jdbc.query(sql,
-
-                (ResultSet result, int rowNum) -> {
-                    return new User(result.getString("name"),
-                            result.getString("username"));
-                },
-
-                limit);
+        return jdbc.query(sql, User.getRowMapper(), limit);
     }
 }
 
 class User {
+
+    public static RowMapper<User> getRowMapper() {
+        return (ResultSet result, int rowNum) -> new User(
+                result.getString("name"),
+                result.getString("username"));
+    }
 
     private String name, username;
 
