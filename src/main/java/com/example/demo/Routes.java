@@ -1,10 +1,8 @@
 package com.example.demo;
 
-import java.sql.ResultSet;
 import java.time.LocalDateTime;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,37 +38,4 @@ class Routes {
         String sql = "select name, username FROM user LIMIT ?";
         return jdbc.query(sql, User.getRowMapper(), limit);
     }
-}
-
-class User {
-
-    public static RowMapper<User> getRowMapper() {
-        return (ResultSet result, int rowNum) -> new User(
-                result.getString("name"),
-                result.getString("username"));
-    }
-
-    private String name, username;
-
-    public User(String name, String username) {
-        this.name = name;
-        this.username = username;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
 }
