@@ -2,7 +2,6 @@ package com.example.demo;
 
 import java.time.LocalDateTime;
 
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,10 +11,10 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 class Routes {
 
-    private final JdbcTemplate jdbc;
+    private final UserData userData;
 
-    public Routes(JdbcTemplate injJdbcTemplate) {
-        jdbc = injJdbcTemplate;
+    public Routes(UserData injUserData) {
+        userData = injUserData;
     }
 
     // https://www.baeldung.com/spring-request-param
@@ -27,7 +26,7 @@ class Routes {
         ModelAndView model = new ModelAndView("template1");
         model.addObject("attribute1", "TEST: id=" + id);
         model.addObject("attribute2", LocalDateTime.now());
-        model.addObject("attribute3", showDataAsJSON(10));
+        model.addObject("attribute3", userData.getUsers(10));
         return model;
     }
 
@@ -35,7 +34,6 @@ class Routes {
     @GetMapping("/db")
     public @ResponseBody Iterable<User> showDataAsJSON(
             @RequestParam(required = false, defaultValue = "10") int limit) {
-        String sql = "select name, username FROM user LIMIT ?";
-        return jdbc.query(sql, User.getRowMapper(), limit);
+        return userData.getUsers(limit);
     }
 }
