@@ -28,23 +28,23 @@ class Routes {
         ModelAndView model = new ModelAndView("template1");
         model.addObject("attribute1", "TEST: id=" + id);
         model.addObject("attribute2", LocalDateTime.now());
-        model.addObject("attribute3", showDataAsJSON("innersun"));
+        model.addObject("attribute3", showDataAsJSON(10));
         return model;
     }
 
     // curl http://localhost:8080/db
-    // curl http://localhost:8080/db?username=yalf
-    // {"name":"dario","username":"yalf"}
     @GetMapping("/db")
     public @ResponseBody Iterable<User> showDataAsJSON(
-            @RequestParam(required = false, defaultValue = "(no username)") String username) {
-        return jdbc.query("select 'dario' as name, ? as username",
+            @RequestParam(required = false, defaultValue = "10") int limit) {
+        String sql = "select name, username FROM user LIMIT ?";
+        return jdbc.query(sql,
 
                 (ResultSet result, int rowNum) -> {
-                    return new User(result.getString("name"), result.getString("username"));
+                    return new User(result.getString("name"),
+                            result.getString("username"));
                 },
 
-                username);
+                limit);
     }
 }
 

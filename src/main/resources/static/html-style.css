@@ -1,3 +1,17 @@
 .boxed {
     border: 1px solid black;
 }
+
+table,
+th,
+td {
+    border: 1px solid;
+}
+
+tr:nth-child(2n+1) {
+    background-color: lightgray;
+}
+
+tr:nth-child(1) {
+    background-color: lightgreen;
+}

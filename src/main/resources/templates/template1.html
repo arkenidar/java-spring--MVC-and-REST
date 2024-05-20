@@ -14,26 +14,38 @@
     <p th:text="${attribute2}" />
     <div class="boxed">boxed div content</div>
     <br>
-    <!-- https://www.baeldung.com/thymeleaf-iteration -->
-    <div class="boxed" th:each="entry, iStat : ${attribute3}">
-        <div th:text="${entry.name}" />
-        <div th:text="${entry.username}" />
-    </div>
+    <table>
+        <tr>
+            <td>name</td>
+            <td>username</td>
+        </tr>
+        <!-- https://www.baeldung.com/thymeleaf-iteration -->
+        <tr th:each="entry, iStat : ${attribute3}">
+            <td th:text="${entry.name}" />
+            <td th:text="${entry.username}" />
+        </tr>
+    </table>
     <hr>
     <!-- https://ejs.co/#install -->
     <div id="ejs_output"></div>
     <!-- https://unpkg.com/ejs/ejs.js -->
     <script src="ejs.js"></script>
     <script type="module">
-        // let json = [{"name":"dario","username":"yalf"}]
-        const response = await fetch("/db?username=yalf")
+        const response = await fetch("/db")
         const json = await response.json()
         const ejs_template =
-            `<% for(let entry of json) { %>
-                <div>
-                    <%= entry.name %>: <%= entry.username %>
-                </div>
-            <% } %>`
+            `<table>
+ <tr>
+  <td>name</td>
+  <td>username</td>
+ </tr>
+ <% for(let entry of json) { %>
+ <tr>
+  <td><%= entry.name %></td>
+  <td><%= entry.username %></td>
+ </tr>
+ <% } %>
+</table>`
         const html = ejs.render(ejs_template, { json })
         document.querySelector("#ejs_output").innerHTML = html
     </script>
