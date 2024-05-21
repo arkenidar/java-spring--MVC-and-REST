@@ -3,14 +3,53 @@
 
 <head>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <script>
+  <script type="module">
 
     function scrollHeight() { return $(document).height() - $(window).height() }
     function isScrolledToBottom() { var h = scrollHeight(); return $("body")[0].scrollTop == h }
     function scroll() { $("body")[0].scrollTop = scrollHeight() }
-    function listMessages(scrollFlag) { $("#message_log").load("listing", function () { if (scrollFlag) scroll() }) }
     function periodicallyListMessagesCallback() { var scrollFlag = isScrolledToBottom(); listMessages(scrollFlag) }
-
+    // [basic "dom-compare"] reimplemented: $("#message_log").load("listing", to check whether there is an effective change. this is useful e.g. for allowing the message log to be selectable.
+    //============================================
+    function listMessagesOriginal(scrollFlag) {
+      $("#message_log").load("listing",
+        function () {
+          if (scrollFlag) scroll()
+        }
+      )
+    }
+    //============================================
+    function listMessages(scrollFlag) {
+      // prepare parameters
+      const loadURL = "listing"
+      const loadDestination = document.querySelector("#message_log")
+      const postUpdate = () => { if (scrollFlag) scroll() }
+      // <div style="display: none;" id="html_buffer"></div>
+      const HTMLBuffer = document.querySelector("#html_buffer")
+      // execute with such parameters
+      loadUrlInto(loadURL, loadDestination, postUpdate, HTMLBuffer)
+    }
+    async function loadTextFromURL(loadURL) {
+      const resource = await fetch(loadURL)
+      const loadedText = await resource.text()
+      return loadedText
+    }
+    async function loadUrlInto(loadURL, loadDestination, postUpdate, HTMLBuffer) {
+      const loadedText = await loadTextFromURL(loadURL)
+      loadTextInto(loadedText, loadDestination, postUpdate, HTMLBuffer)
+    }
+    function loadTextInto(loadedText, loadDestination, postUpdate, HTMLBuffer) {
+      // load into HTML DOM-tree
+      HTMLBuffer.innerHTML = loadedText
+      // do update?
+      if (loadDestination.innerHTML != HTMLBuffer.innerHTML) {
+        // update!
+        loadDestination.innerHTML = HTMLBuffer.innerHTML
+        // post-update ...
+        postUpdate()
+      }
+    }
+    //============================================
     $(function () {
       setInterval(periodicallyListMessagesCallback, 500) // get messages periodically
       $("#send_message_form").submit(function () {
@@ -40,6 +79,7 @@
 </head>
 
 <body>
+  <div style="display: none;" id="html_buffer"></div>
   <div id="message_log"></div>
   <form id="send_message_form" action="" method="post">
     Sender: <input type="text" name="sender" value="sender"><br>
